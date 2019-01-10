@@ -1,9 +1,16 @@
 #include <SoftwareSerial.h>
-#define RED_PIN 10
-#define GREEN_PIN 11
+#define RED_PIN 2
+#define GREEN_PIN 4
 #define BLUE_PIN 12
 
-SoftwareSerial bluetooth(7, 8); // RX, TX  
+#define RED_LED 6
+#define GREEN_LED 5
+#define BLUE_LED 3
+
+#define BLUETOOTH_TX 7
+#define BLUETOOTH_RX 8
+
+SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
 //  Hue|Saturation|Value|
 // [0.0-1.0]|[0.0-1.0]|[0.0-1.0]|
@@ -11,7 +18,7 @@ SoftwareSerial bluetooth(7, 8); // RX, TX
 
 char START_CMD_CHAR = '^';
 char END_CMD_CHAR = '$';
-char SEP_CMD_CHAR = '|';
+char SEP_CMD_CHAR = '/';
 
 struct hsvColor {
   float hue;
@@ -25,7 +32,7 @@ struct rgbColor {
   float blue;
 };
 
-hsvColor lampColor = { 0.2, 1.0, 0.5 };
+hsvColor lampColor = { 0.4, 1.0, 1.0 };
 
 void setup() {
   pinMode(RED_PIN, OUTPUT);
@@ -33,29 +40,39 @@ void setup() {
   pinMode(BLUE_PIN, OUTPUT);
   
   Serial.begin(9600);
-  bluetooth.begin(9600);  
+  bluetooth.begin(9600);
+  updateLamp(rgbFromHsv(lampColor));
 }
 
 void loop() {
-  if (bluetooth.available() < 1) return;
-
-  float hue = bluetooth.parseFloat();
-  if (bluetooth.read() != SEP_CMD_CHAR) return;
-
-  float saturation = bluetooth.parseFloat();
-  if (bluetooth.read() != SEP_CMD_CHAR) return;
-
-  float value = bluetooth.parseFloat();
-
-  lampColor = { hue, saturation, value };
+//  if (bluetooth.available() < 1) return;
+//
+//  float hue = bluetooth.parseFloat();
+//  if (bluetooth.read() != SEP_CMD_CHAR) return;
+//
+//  float saturation = bluetooth.parseFloat();
+//  if (bluetooth.read() != SEP_CMD_CHAR) return;
+//
+//  float value = bluetooth.parseFloat();
+  lampColor.hue += 0.05;
+  if (lampColor.hue >= 1.0) {
+    lampColor.hue = 0.0;
+  }
+ 
+//  lampColor = { hue, saturation, value };
 
   updateLamp(rgbFromHsv(lampColor));
+  delay(1000);
 }
 
 void updateLamp(rgbColor rgb) {
   analogWrite(RED_PIN, (int)(rgb.red * 255));
   analogWrite(GREEN_PIN, (int)(rgb.green * 255));
-  analogWrite(BLUE_PIN, (int)(rgb.blue * 255));  
+  analogWrite(BLUE_PIN, (int)(rgb.blue * 255));
+
+  analogWrite(RED_LED, (int)(rgb.red * 255));
+  analogWrite(GREEN_LED, (int)(rgb.green * 255));
+  analogWrite(BLUE_LED, (int)(rgb.blue * 255));  
 }
 
 // https://gist.github.com/postspectacular/2a4a8db092011c6743a7
