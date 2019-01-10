@@ -5,9 +5,9 @@
 
 SoftwareSerial bluetooth(7, 8); // RX, TX  
 
-//  H | S | V
-// [0-359]|[0.0-1.0]|[0.0-1.0]
-// 43|0.43|0.23
+//  Hue|Saturation|Value|
+// [0.0-1.0]|[0.0-1.0]|[0.0-1.0]|
+// 0.52|0.43|0.95
 
 char START_CMD_CHAR = '^';
 char END_CMD_CHAR = '$';
@@ -25,7 +25,7 @@ struct rgbColor {
   float blue;
 };
 
-hsvColor lampColor = { 0.2, 1.0, 1.0 };
+hsvColor lampColor = { 0.2, 1.0, 0.5 };
 
 void setup() {
   pinMode(RED_PIN, OUTPUT);
@@ -53,12 +53,6 @@ void loop() {
 }
 
 void updateLamp(rgbColor rgb) {
-  Serial.println("updateLamp");
-
-  Serial.println(rgb.red);
-  Serial.println(rgb.green);
-  Serial.println(rgb.blue);
-
   analogWrite(RED_PIN, (int)(rgb.red * 255));
   analogWrite(GREEN_PIN, (int)(rgb.green * 255));
   analogWrite(BLUE_PIN, (int)(rgb.blue * 255));  
