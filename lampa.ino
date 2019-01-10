@@ -37,21 +37,31 @@ void setup() {
 }
 
 void loop() {
-//  if (bluetooth.available() < 1) return;
+  if (bluetooth.available() < 1) return;
 
-  lampColor.hue += 0.01;
-  if (lampColor.hue >= 1.0) {
-    lampColor.hue = 0.0;
-  }
+  float hue = bluetooth.parseFloat();
+  if (bluetooth.read() != SEP_CMD_CHAR) return;
+
+  float saturation = bluetooth.parseFloat();
+  if (bluetooth.read() != SEP_CMD_CHAR) return;
+
+  float value = bluetooth.parseFloat();
+
+  lampColor = { hue, saturation, value };
 
   updateLamp(rgbFromHsv(lampColor));
-  delay(100);
 }
 
 void updateLamp(rgbColor rgb) {
-  analogWrite(RED_PIN, (int)((1.0 - rgb.red) * 255));
-  analogWrite(GREEN_PIN, (int)((1.0 - rgb.green) * 255));
-  analogWrite(BLUE_PIN, (int)((1.0 - rgb.blue) * 255));  
+  Serial.println("updateLamp");
+
+  Serial.println(rgb.red);
+  Serial.println(rgb.green);
+  Serial.println(rgb.blue);
+
+  analogWrite(RED_PIN, (int)(rgb.red * 255));
+  analogWrite(GREEN_PIN, (int)(rgb.green * 255));
+  analogWrite(BLUE_PIN, (int)(rgb.blue * 255));  
 }
 
 // https://gist.github.com/postspectacular/2a4a8db092011c6743a7
