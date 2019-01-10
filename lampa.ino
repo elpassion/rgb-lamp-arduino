@@ -16,9 +16,7 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 // [0.0-1.0]|[0.0-1.0]|[0.0-1.0]|
 // 0.52|0.43|0.95
 
-char START_CMD_CHAR = '^';
-char END_CMD_CHAR = '$';
-char SEP_CMD_CHAR = '/';
+char SEP_CMD_CHAR = '|';
 
 struct hsvColor {
   float hue;
@@ -38,31 +36,31 @@ void setup() {
   pinMode(RED_PIN, OUTPUT);
   pinMode(GREEN_PIN, OUTPUT);
   pinMode(BLUE_PIN, OUTPUT);
-  
+
   Serial.begin(9600);
   bluetooth.begin(9600);
   updateLamp(rgbFromHsv(lampColor));
 }
 
 void loop() {
-//  if (bluetooth.available() < 1) return;
-//
-//  float hue = bluetooth.parseFloat();
-//  if (bluetooth.read() != SEP_CMD_CHAR) return;
-//
-//  float saturation = bluetooth.parseFloat();
-//  if (bluetooth.read() != SEP_CMD_CHAR) return;
-//
-//  float value = bluetooth.parseFloat();
-  lampColor.hue += 0.05;
-  if (lampColor.hue >= 1.0) {
-    lampColor.hue = 0.0;
-  }
- 
-//  lampColor = { hue, saturation, value };
+  if (bluetooth.available() < 1) return;
+
+  float hue = bluetooth.parseFloat();
+  if (bluetooth.read() != SEP_CMD_CHAR) return;
+
+  float saturation = bluetooth.parseFloat();
+  if (bluetooth.read() != SEP_CMD_CHAR) return;
+
+  float value = bluetooth.parseFloat();
+  lampColor = { hue, saturation, value };
+
+//  lampColor.hue += 0.05;
+//  if (lampColor.hue >= 1.0) {
+//    lampColor.hue = 0.0;
+//  }
+//  delay(1000);
 
   updateLamp(rgbFromHsv(lampColor));
-  delay(1000);
 }
 
 void updateLamp(rgbColor rgb) {
